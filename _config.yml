@@ -14,7 +14,7 @@ description: Developer. Mathematician.
 cover: assets/images/portfolio-cover.jpg
 logo: assets/images/portfolio-icon.png
 logo_dark: assets/images/favicon.png
-favicon: assets/images/favicon.png
+favicon: /assets/images/favicon.png
 production_url: https://jenniferanne1991.github.io/
 source_url: https://github.com/jenniferanne1991/
 CNAME: #add cname for website to be created
