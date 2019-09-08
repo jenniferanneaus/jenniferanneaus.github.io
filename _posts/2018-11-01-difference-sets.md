@@ -5,7 +5,7 @@ cover:  assets/images/difference-sets.jpg
 navigation: True
 title: Searching for relative difference sets
 date: 2018-11-01 08:00:00
-tags: C++
+tags: c++
 class: post-template
 subclass: 'post tag-c++'
 ---

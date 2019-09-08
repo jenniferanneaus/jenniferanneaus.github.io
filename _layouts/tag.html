@@ -23,7 +23,11 @@ logo: 'assets/images/jenn-logo.png'
                 {% if tag_description %}
                     {{ tag_description }}
                 {% elsif page.tag %}
-    			    A collection of {{ paginator.total_posts }} posts
+                    {% if paginator.total_posts == 1 %}
+                        A collection of 1 post
+                    {% else %}
+    			        A collection of {{ paginator.total_posts }} posts
+                    {% endif %}
                 {% endif %}
             </h2>
         </div>
