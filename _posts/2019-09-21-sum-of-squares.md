@@ -4,7 +4,7 @@ current: post
 cover:  assets/images/squares.jpg
 navigation: True
 title: Sum of Squares
-date: 2019-09-20 10:15:00
+date: 2019-09-21 10:15:00
 tags: [python, maths]
 class: post-template
 subclass: 'post tag-python tag-maths'
@@ -32,7 +32,7 @@ Decomposing this problem into its component parts, there are a few things we nee
 2. A way to find all squarefree $N$ that are only divisible by these primes.
 3. An efficient way to calculate $S(N)$ for each of the squarefree $N$.
 
-We begin with step 1. Since the maximum is 150, it is easy to find all required primes. First, we need a way to check whether a number is prime. Python doesn't have an inbuilt function for this, so we will create a simple one here. Recall that a prime number has no factors apart from 1 and itself. Note also that if a number $n$ has a factor greater than or equal to $\sqrt{n}$, it must also have a factor less than or equal to $\sqrt{n}$. Therefore, we only need to check for factors between 2 and $\sqrt{n}$:
+We begin with step 1. Since the maximum is 150, it is easy to find all required primes using the same function as in my [Project Euler post]({% post_url 2019-09-18-project-euler %}):
 
 ```python
 def is_prime(n):
