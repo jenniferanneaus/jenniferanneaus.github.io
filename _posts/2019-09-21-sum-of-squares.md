@@ -71,27 +71,27 @@ def squarefree_numbers(factors):
 	return ans
 ```
 
-We could then brute force our way through the problem of calculating $\sum S(N)$ for all numbers in our list. The problem is, our 16 prime factors lead to the creation of over 65,000 squarefree numbers, some of the order of $10^{18}$. Solving this by brute force is therefore going to take a long time. Not to worry though, there are existing mathematical theorems we can use to vastly improve the program's efficiency.
+We could then brute force our way through the problem of calculating $\sum S(N)$ for all numbers in our list. The problem is, our 16 prime factors lead to the creation of over 65,000 squarefree numbers, some of the order of $10^{18}$. Solving this by brute force is therefore going to take a long time. Luckily for us, there are existing mathematical theorems we can use to vastly improve the program's efficiency.
 
-The key here is that all of our prime factors are of the form $4k+1$. According to [Fermat's Theorem](http://mathworld.wolfram.com/Fermats4nPlus1Theorem.html), any prime number of this form can be written as the sum of two squares in exactly one way. As for the composite numbers, we can use a function called the [Sum of Squares Function](http://mathworld.wolfram.com/SumofSquaresFunction.html). We first consider the prime factorisation of our target number $n$. In our case, we have:
-<p style="text-align: center;">$n=p_1^{a_1}p_2^{a_2}...p_r^{a_r}$</p>
-where each prime factor $p_1,p_2,...,p_r$ is of the form $4k+1$. Then, according to the Sum of Squares Function, the number of ways to write $n$ as a sum of 2 squares (ignoring order and signs) is equal to
+The first important thing to notice is that all of our prime factors are of the form $4k+1$. According to [Fermat's Theorem](http://mathworld.wolfram.com/Fermats4nPlus1Theorem.html), any prime number of this form can be written as the sum of two squares in exactly one way. As for the composite numbers, we can use a function called the [Sum of Squares Function](http://mathworld.wolfram.com/SumofSquaresFunction.html). To use this function, we first consider the prime factorisation of our target number $N$. In our case, we have:
+<p style="text-align: center;">$N=p_1^{a_1}p_2^{a_2}...p_r^{a_r}$</p>
+where each prime factor $p_1,p_2,...,p_r$ is of the form $4k+1$. Then, according to the Sum of Squares Function, the number of ways to write $N$ as a sum of 2 squares (ignoring order and signs) is equal to
 <p style="text-align: center;">$\frac12(a_1+1)(a_2+1)...(a_r+1)$.</p>
-Since we are only interested in squarefree numbers, the value of each index $a_1,a_2,...,a_r$ will either be 0 or 1. Hence, the number of ways of writing $n$ as a sum of two squares (again, ignoring order and signs) is equal to $2^{q-1}$, where $q$ is the number of distinct prime factors of $n$.
+Since we are only interested in squarefree numbers, the value of each index $a_1,a_2,...,a_r$ will either be 0 or 1. Hence, the number of ways of writing $N$ as a sum of two squares (again, ignoring order and signs) is equal to $2^{q-1}$, where $q$ is the number of distinct prime factors of $N$.
 
-We now need to apply this to our Sum of Squares problem. For the prime factors we still can't do much better than brute force, but at least we know that we can return once we find one pair of integers whose squares add up to our desired target. We also know how many sums we should have for composite numbers, but we need to find a way use the sums of prime factors to find the sums for composite numbers. To construct the sums, we will use a generalised version of the approach described in [this Math StackExchange forum](https://math.stackexchange.com/questions/1181336/the-number-of-ways-of-writing-an-integer-as-a-sum-of-two-squares). 
+We now need to apply this to our Sum of Squares problem. Although it helps to know how many ways we should be able to write the sum for a given number, we want to find the sums themselves. For the prime factors we still can't do much better than brute force, but at least we know that we can return once we find one pair of integers whose squares add up to our desired target. For composite numbers, we need to find a way use the sums of prime factors to find the sums for their multiples. To construct the sums, we will use a generalised version of the approach described in [this forum](https://math.stackexchange.com/questions/1181336/the-number-of-ways-of-writing-an-integer-as-a-sum-of-two-squares). 
 
-Consider our target $n$ as a product $pq$. Note that $p$ and $q$ are not necessarily prime. Suppose that we can write $p$ and $q$ as sums of squares in the following ways:
+Consider our target $N$ as a product $pq$. Note that $p$ and $q$ are not necessarily prime. Suppose that we can write $p$ and $q$ as sums of squares in the following ways:
 <p style="text-align: center;">
 $$\begin{align}
 p &= a^2+b^2 \\
 q &= c^2+d^2
 \end{align}$$
 </p>
-Then, we can write $n$ as follows:
+Then, we can write $N$ as follows:
 <p style="text-align: center;">
 $$\begin{align}
-n &= pq \\
+N &= pq \\
   &= (a^2+b^2)(c^2+d^2) \\
   &= (ac)^2+(ad)^2+(bc)^2+(bd)^2 \\
 \end{align}$$
@@ -100,7 +100,7 @@ n &= pq \\
 This can be continued in two possible ways (ignoring order and sign). First, we could write it as:
 <p style="text-align: center;">
 $$\begin{align}
-n &= (ac)^2+(ad)^2+(bc)^2+(bd)^2 \\
+N &= (ac)^2+(ad)^2+(bc)^2+(bd)^2 \\
   &= (ac)^2+2abcd+(bd)^2+(ad)^2-2abcd+(bc)^2 \\
   &= (ac+bd)^2+|ad-bc|^2
 \end{align}$$
@@ -108,20 +108,22 @@ n &= (ac)^2+(ad)^2+(bc)^2+(bd)^2 \\
 Alternatively, we could write it as:
 <p style="text-align: center;">
 $$\begin{align}
-m &= (ac)^2+(ad)^2+(bc)^2+(bd)^2 \\
+N &= (ac)^2+(ad)^2+(bc)^2+(bd)^2 \\
   &= (ad)^2+2abcd+(bc)^2+(ac)^2-2abcd+(bd)^2 \\
   &= (ad+bc)^2+|ac-bd|^2
 \end{align}$$
 </p>
 
-Provided that $p\neq q$, these two representations will be distinct. Furthermore, in our case, if $p$ and $q$ can be represented as a sum of 2 squares in multiple ways, each pair of representations of $p,q$ will lead to two distinct representations of $n$. For example, if our target was $5\times 13\times 17=5\times 221 =1,105$, we might determine how to write it as a sum of squares in the following way:
+Provided that $p\neq q$ and $p,q$ are both odd, these two representations will be distinct. Both conditions are met in our case, as $N$ is squarefree and is only divisible by odd numbers. Furthermore, in our case, if $p$ and $q$ can be represented as a sum of two squares in multiple different ways, each pair of representations $(a^2+b^2,c^2+d^2)$ will lead to two unique representations of $N$. Thus, by considering our target $N$ as a product of two numbers and recursively finding the sums for each factor, we can find all sums for $N$. For example, if our target was $1,105=5\times 221=5\times (13\times 17)$, we might determine how to write it as a sum of squares in the following way:
 ![Calculations](assets/images/problem_273_calculations.png)
-Notice that we are not interested in what the squarefree numbers are per se. Rather, we are interested in keeping track of the ways we can write them as the sum of two squares. We begin by writing a method to find the positive integers $a$ and $b$ such that $a< b $ and $a^2+b^2=n$ with $n$ prime. We do this by simply iterating through possible values of $a$ until we find one that works. Note that if $n\equiv 3\mod 4$, it cannot be written as the sum of two squares.
+Notice that we are not interested in what the squarefree numbers are per se. Rather, we are interested in keeping track of the ways we can write them as the sum of two squares. To achieve this, we begin by writing a method to find the positive integers $a$ and $b$ such that $a< b $ and $a^2+b^2=N$ with $N$ prime. We do this by simply iterating through possible values of $a$ until we find one that works. Note that if $N\equiv 3\mod 4$, it cannot be written as the sum of two squares.
 
 ```python
 def root_summands_of_prime(N):
 	if N % 4 == 3:
 		return 0
+	if N == 2:
+		return [1, 1]
 	a = 0
 	maximum = math.sqrt(N/2)
 	while a <= maximum:
@@ -133,7 +135,7 @@ def root_summands_of_prime(N):
 		a = a + 1
 ```
 
-Then, we can use a method similar to our ```squarefree_numbers``` method, but modify it to return our $a$ and $b$ values rather than the squarefree numbers that correspond to $a^2+b^2$:
+Then, we can use the basic structure of our ```squarefree_numbers``` method, but modify it to return $a$ and $b$ values rather than the squarefree numbers $N$ that correspond to $a^2+b^2$. In addition, rather than taking a list of factors as a parameter, our method will expect a list whose elements are of the form $[a,b]$, where $a^2+b^2$ corresponds to a prime factor:
 
 ```python
 def root_summands_of_composite(summands_list):
@@ -150,7 +152,7 @@ def root_summands_of_composite(summands_list):
 	return ans
 ```
 
-Our overall solution will involve finding the $a$ and $b$ values corresponding to each prime $p<150$ of the form $4k+1$, then using those to find the $a$ and $b$ values corresponding to composite squarefree numbers with prime factors of the form $4k+1$:
+Our overall solution will therefore involve finding the $a$ and $b$ values corresponding to each prime $p<150$ of the form $4k+1$, then using those to find the $a$ and $b$ values corresponding to composite squarefree numbers with prime factors of the form $4k+1$:
 
 ```python
 def overall_solution(maximum):
@@ -163,7 +165,7 @@ def overall_solution(maximum):
 	return sum_s_of_n
 ```
 
-Note that $S(n)$ only requires the $a$ values, so after we store the $a$ and $b$ values in ```summands_list``` we have utilised the function ```add_mins``` which is defined as follows:
+Note that $S(N)$ only requires the values of $a$, so after we store the $a$ and $b$ values in ```summands_list``` we have utilised the function ```add_mins``` which is defined as follows:
 
 ```python
 def add_mins(summands_list):

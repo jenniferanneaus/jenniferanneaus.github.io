@@ -14,16 +14,16 @@ When I was searching for coding challenges recently, I came across [Project Eule
 
 I started with Problem 6; to skip ahead to my discussion of other problems you can click [here for Problem 1](#problem-1) or [here for Problem 46](#problem-46). 
 
-[Problem 6](https://projecteuler.net/problem=6) is a simple question, asking us to do the following:
+[Problem 6](https://projecteuler.net/problem=6) is a simple question, which asks:
 
 > Find the difference between the sum of the squares of the first one hundred natural numbers and the square of the sum.
 
-That is, we want to calculate $(1+2+...+100)^2-(1^2+2^2+...+100^2)$. Given that 100 is small in computer terms, this problem could easily be solved using a ```for``` loop. However, summing $n$ and $n^2$ reminded me of the maths I was teaching not so long ago. <a name="return-from-footnote"></a> I decided to use the formulae for these sums to make my solution efficient, and easily able to be scaled up to numbers much larger than 100. The two formulae[$^1$](#footnote) are as follows:
+That is, we want to calculate $(1+2+...+100)^2-(1^2+2^2+...+100^2)$. Given that 100 is small in computer terms, this problem could easily be solved using a ```for``` loop. However, calculating sums for $n$ and $n^2$ reminded me of the maths I was teaching not so long ago. <a name="return-from-footnote"></a> I decided to use the formulae for these sums to make my solution efficient, and easily able to be scaled up to numbers much larger than 100. The two formulae[$^1$](#footnote) are as follows:
 
 + $\displaystyle\sum_1^n n = \frac{n(n+1)}{2}$
 + $\displaystyle\sum_1^n n^2 = \frac{n(n+1)(2n+1)}{6}$
 
-The first formula, for summation of the first $n$ natural numbers, is famously attributed to Gauss. It is said he was asked to calculate $1+2+...+100$ as a young schoolboy; though his teacher expected the problem to keep him occupied for a long time, Gauss cleverly noticed a pattern and solved the problem quite quickly. Generalising using the case $1+2+...+n$, we can visualise it as follows. First, we put the numbers 1 to $n$ in columns.
+The first formula, for summation of the first $n$ natural numbers, is famously attributed to Gauss. It is said he was asked to calculate $1+2+...+100$ as a young schoolboy; though his teacher expected the problem to keep him occupied for a long time, Gauss cleverly noticed a pattern and solved the problem quite quickly. Using the sum $1+2+...+n$, we can visualise it as follows. First, we put the numbers 1 to $n$ in columns.
 ![Sum of integers 1](assets/images/sum_natural_numbers_1.png)
 Then, we take another copy of the numbers 1 to $n$. Put this copy in reverse order, and place it below the first.
 ![Sum of integers 2](assets/images/sum_natural_numbers_2.png)
@@ -31,7 +31,7 @@ Now each column adds up to a total of $n+1$.
 ![Sum of integers 3](assets/images/sum_natural_numbers_3.png)
 Therefore, we have a total of $n(n+1)$. However, since we added two copies of each integer instead of just one, we need to halve our answer to obtain $\displaystyle\sum_1^n n = \frac{n(n+1)}{2}$. Pretty cool, huh?
 
-Using the mathematical formulae in the code for our solution, we have two functions to write. To calculate $\displaystyle\sum_1^n n$ we have:
+Getting back to our code, we have two functions to write. To calculate $\displaystyle\sum_1^n n$ we have:
 
 ```python
 def sum(n):
@@ -90,7 +90,7 @@ The final problem I coded for this post is [Problem 46](https://projecteuler.net
 
 > Every odd composite number can be written as the sum of a prime and twice a square.
 
-Recall that a composite number is an integer greater than 1 that is not prime. We will begin our solution by writing a function to check whether a number is prime. Python doesn't have an inbuilt function for this; although libraries with prime checkers exist, the function is simple enough to write from scratch. The approach involves checking whether the given number, $n$, has any factors between $2$ and $n-1$. However, if $n$ has a factor greater than or equal to $\sqrt{n}$, it must also have a factor less than or equal to $\sqrt{n}$. Therefore, we only need to check for factors between 2 and $\sqrt{n}$:
+Recall that a composite number is an integer greater than 1 that is not prime. We will begin our solution by writing a function to check whether a number is prime. Python doesn't have an inbuilt function for this; although libraries with prime checkers exist, it is simple enough for us to write our own function. Intuitively, we need to know whether the given number $n$ has any factors between $2$ and $n-1$. However, notice that if $n$ has a factor greater than or equal to $\sqrt{n}$, it must also have a factor less than or equal to $\sqrt{n}$. Therefore, we only need to check for factors between 2 and $\sqrt{n}$:
 
 ```python
 def is_prime(n):
@@ -102,7 +102,7 @@ def is_prime(n):
 
 Note that we have added 1 to ```math.sqrt(n)``` because ```range()``` excludes the upper bound. 
 
-Since the question relates to odd numbers and all primes aside from 2 are odd, we will treat 2 as a special case and add it manually to a list called ```primes```. We then find the solution by iterating through the odd numbers, starting with 3, and either adding them to our ```primes``` list or checking whether it satisfies the Conjecture. The code for this is as follows:
+Since the question relates to odd numbers and all primes are odd except for 2, we will treat 2 as a special case and add it manually to a list called ```primes```. We then find the solution by iterating through odd numbers, starting with 3, and either adding them to our ```primes``` list or checking whether it satisfies the conjecture. The code for this is as follows:
 
 ```python
 def disprove_goldbachs_other_conjecture():
@@ -118,17 +118,17 @@ def disprove_goldbachs_other_conjecture():
 		current = current + 2
 ```
 
-What remains is to write the code to create the required sum. We know that if a number $n$ is to be written as the sum of a prime and twice a square, then the prime must be smaller than $n$. We therefore check each value $p$ in our ```primes``` list, and see whether the difference between $n$ and $p$ is 2 times a perfect square. To do that, we can use the following:
+What remains is to write a function ```create_sum(n, primes)``` to check Goldbach's conjecture. We know that if a number $n$ is to be written as the sum of a prime and twice a square, then the prime must be smaller than $n$. In our case, the list ```primes``` already contains the potential candidates, so we will pass that to the function. We then check each prime $p$ in the list to see whether the difference between $n$ and $p$ is 2 times a perfect square. To do that, we can use the following:
 
 ```python
-def create_sum(target, primes):
-	for prime in primes:
-		if math.floor(math.sqrt((target-prime)/2)) == math.sqrt((target-prime)/2):
-			return prime
+def create_sum(n, primes):
+	for p in primes:
+		if math.floor(math.sqrt((n-p)/2)) == math.sqrt((n-p)/2):
+			return p
 	return 0
 ```
 
-So there we have it! There are hundreds of questions on the Project Euler website, each with a different balance of coding skills and mathematical know-how. My next blog post is about [Sum of Squares]({% post_url 2019-09-21-sum-of-squares %}), another problem from Project Euler that turned out to be mathematically challenging and worthy of a separate post. To see the Python files, visit [my GitHub repository](https://github.com/jenniferanne1991/project_euler_code).
+So there we have it, problem solved! There are hundreds of questions on the Project Euler website, each with a different balance of coding skills and mathematical know-how. My next blog post is about [Sum of Squares]({% post_url 2019-09-21-sum-of-squares %}), another problem from Project Euler that turned out to be mathematically challenging and worthy of a separate post. To see the Python files, visit [my GitHub repository](https://github.com/jenniferanne1991/project_euler_code).
 
 <a name="footnote"></a>
 <br>
