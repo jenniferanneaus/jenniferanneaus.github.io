@@ -192,6 +192,9 @@ samp {
     font-family: monospace, monospace;
     font-size: 1em;
 }
+pre {
+    white-space: pre-wrap;
+}
 button,
 input,
 optgroup,
