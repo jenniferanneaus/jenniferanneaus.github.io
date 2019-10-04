@@ -77,12 +77,231 @@ def timesheet_value(date, start, finish)
 end
 ``` 
 
-These methods are both placed in the helper file (```timesheets_helper.rb``` in my case), and the helper is included in the relevant controller. We next turn our attention to building a form to create timesheet entries, and validating user input.
+These methods are both placed in the helper file, and the helper is included in the relevant controller. In this case, we have a controller called ```timesheets_controller``` so our helper file is ```timesheets_helper.rb```. We next turn our attention to our ```timesheet``` model, how to create timesheets using a form and how to validate user input. I used a form based on the one Michael Hartl describes in his [Rails Tutorial](https://www.railstutorial.org/book). However, note that the tutorial uses ```form_for```, which is now soft-deprecated. We will use the ```form_with``` helper instead:
 
-+ forms and stuff
-+ simple validations and tests
-+ custom validations and tests
+```erb
+<div class="row">
+  <%= form_with(model: @timesheet, url: new_path) do |f| %>
+    <h2>Create new timesheet</h2>
+    <%= render 'shared/error_messages' %>
+    <%= f.label :date %>
+    <br>
+    <%= f.date_field :date, class: 'form-control' %>
+    <br padding-bottom: 10px>
+    <%= f.label :start %>
+    <br>
+    <%= f.time_field :start, class: 'form-control' %>
+    <br padding-bottom: 10px>
+    <%= f.label :finish %>
+    <br>
+    <%= f.time_field :finish, class: 'form-control' %>
+    <br padding-bottom: 10px>
+    <%= f.submit "Submit timesheet", class: "button" %>
+  <% end %>
+</div>
+```
+
+Since Turbolinks does not support ```render```, you can use the ```turbolinks_render``` gem to ensure the error messages get rendered. To retrieve the error messages, the code in ```app/views/shared/_error_messages.html.erb```, is as follows:
+
+```erb
+<% if @timesheet.errors.any? %>
+  <div id="error_explanation">
+    <div class="alert alert-danger">
+      The form contains <%= pluralize(@timesheet.errors.count, "error") %>.
+    </div>
+    <ul>
+    <% @timesheet.errors.full_messages.each do |msg| %>
+      <li><%= msg %></li>
+    <% end %>
+    </ul>
+  </div>
+<% end %>
+```
+
+Now to make sure we are displaying the error messages we need, we will write validations. Ruby has already created the file ```app/models/timesheet.rb``` for us, and our presence validations can be added easily:
+
+```ruby
+validates :start, presence: true
+validates :finish, presence: true
+validates :date, presence: true
+```
+
+To ensure the other conditions are met, we can write custom validation methods. These methods must be registered using the ```validate``` class method:
+
+```ruby
+validate :date_cannot_be_in_future
+validate :start_must_be_before_finish
+validate :timesheet_entries_must_not_overlap
+
+def date_cannot_be_in_future
+  if date.present? && date > Date.today
+    errors.add(:date, "can't be in the future")
+  end
+end
+
+def start_must_be_before_finish
+  if start.present? && finish.present? && start >= finish
+    errors.add(:finish, "time must be after start time")
+  end
+end
+
+def timesheet_entries_must_not_overlap
+  same_date_timesheets = Timesheet.where(date: date).where.not(id: self.id)
+  if same_date_timesheets == nil
+    return
+  end
+  same_date_timesheets.each do |same_date_timesheet|
+    unless same_date_timesheet.finish < start or finish < same_date_timesheet.start
+      unless errors.added?(:This, "entry overlaps with an exiting timesheet entry")
+        errors.add(:This, "entry overlaps with an exiting timesheet entry")
+      end
+    end
+  end
+end
+```
+
+Notice that ```Timesheet``` can be used to access all the timesheets that have been saved so far, and we can use ```where.not(id: self.id)``` to ensure that we don't include the current timesheet in our validation. For example, we need to update timesheets (after calculating their pay); if we don't exclude the current timesheet, we will be unable to update it because its time frame overlaps with itself.
+
+To make sure our validations are working, we need to write some tests. Unit tests for our timesheet reside in ```test/models/timesheet_test.rb```. At the beginning of the class, we will define a setup method that includes valid input for a timesheet:
+
+```ruby
+def setup
+  @timesheet = Timesheet.new(date: Date.new(2019,8,8), start: Time.new(2019,8,8,12,00), finish: Time.new(2019,8,8,19,30))
+end
+```
+
+We can then include a test to make sure that the default information results in a valid timesheet being created. After that, each of our tests will involve making a timesheet invalid in a single way, and asserting that the timesheet is not valid. For example, we might remove a piece of information that is required or create a timesheet whose date is in the future. Each of our tests is straightforward, so you should get an idea of what each test does by simply reading it:
+
+```ruby
+test "should be valid" do
+  assert @timesheet.valid?
+end
+
+test "date must be present" do
+  @timesheet.date = nil
+  assert_not @timesheet.valid?
+end
+
+test "start time must be present" do
+  @timesheet.start = nil
+  assert_not @timesheet.valid?
+end
+
+test "finish time must be present" do
+  @timesheet.finish = nil
+  assert_not @timesheet.valid?
+end
+
+test "finish time must be after start" do
+  @timesheet.start = Time.now
+  @timesheet.finish = Time.now - 1800
+  assert_not @timesheet.valid?
+end
+
+test "date cannot be in future" do
+  @timesheet.date = Date.today + 2.days
+  assert_not @timesheet.valid?
+end
+```
+
+Whilst these tests help us with simple errors, they still do not check for overlapping timesheet entries. They also do not consider timesheet pay calculations, or whether our pages are loading correctly. For that we will use integration tests; to get started we will simply run
+<p style="text-align: center; font-family: monospace, monospace;font-size: 0.85em; background-color: #e9f1f5">rails generate integration_test timesheets_new</p>
+in our console and Rails will generate the file ```timesheets_new_test.rb``` in ```test/integration``` for us.
+
+First, we will write a test to check that invalid timesheets are not saved. In addition to asserting no timesheet is saved when invalid information is given, we will also assert that the "Create Timesheet" page is re-rendered, with error messages displayed and fields with errors highlighted:
+
+```ruby
+test "invalid timesheet information" do
+  get new_path
+  assert_no_difference 'Timesheet.count' do
+    post timesheets_path, params: { timesheet: {
+      date: Date.tomorrow,
+      start: Time.now + 1800,
+      finish: Time.now - 1800}   }
+  end
+  assert_template 'timesheets/new'
+  assert_select 'div#error_explanation'
+  assert_select 'div.field_with_errors'
+end
+```
+
+This introduces us to the main tools we will use in our integration tests: telling Rails we are interested in the "Create Timesheet" page using ```get new_path```, then asserting whether or not there is a difference in count and asserting the correct template is rendered. The other integration tests we will include correspond to timesheet pay calculations and overlapping timesheet entries. Again, the code is fairly straighforward to read:
+
+```ruby
+test "overlapping timesheet entries" do
+  Timesheet.create(date: Date.new(2000,1,1), 
+    start: Time.httpdate("Sat, 01 Jan 2000 09:00:00 GMT"), 
+    finish: Time.httpdate("Sat, 01 Jan 2000 17:00:00 GMT"))
+  get new_path
+  # Check that if an overlapping timesheet entry is submitted, it does not save.
+  assert_no_difference 'Timesheet.count' do
+    post timesheets_path, params: { timesheet: {
+      date: Date.new(2000,1,1),
+      start: Time.httpdate("Sat, 01 Jan 2000 07:23:00 GMT"),
+      finish: Time.httpdate("Sat, 01 Jan 2000 10:47:00 GMT")}   }
+  end
+  # Ensure 'new' page is re-rendered and error message is displayed.
+  assert_template 'timesheets/new'
+  assert_select 'div#error_explanation'
+end
+
+test "valid timesheet information saturday" do
+  get new_path
+  assert_difference 'Timesheet.count', 1 do
+    post timesheets_path, params: { timesheet:{
+      date: Date.new(2000,1,1),
+      start: Time.httpdate("Sat, 01 Jan 2000 03:00:00 GMT"),
+      finish: Time.httpdate("Sat, 01 Jan 2000 13:30:00 GMT")} }
+  end
+  # Check that the app redirects to index and correctly calculates pay.
+  follow_redirect!
+  assert_template 'timesheets/index'
+  assert Timesheet.last.pay == 493.50
+end
+
+test "valid timesheet information thursday" do
+  get new_path
+  assert_difference 'Timesheet.count', 1 do
+    post timesheets_path, params: { timesheet:{
+      date: Date.new(2019,8,8),
+      start: Time.httpdate("Thu, 08 Aug 2019 12:00:00 GMT"),
+      finish: Time.httpdate("Thu, 08 Aug 2019 20:15:00 GMT")} }
+  end
+  # Check that the app redirects to index and correctly calculates pay.
+  follow_redirect!
+  assert_template 'timesheets/index'
+  assert Timesheet.last.pay == 238.75
+end
+
+test "valid timesheet information wednesday across peak" do
+  get new_path
+  assert_difference 'Timesheet.count', 1 do
+    post timesheets_path, params: { timesheet:{
+      date: Date.new(2019,8,7),
+      start: Time.httpdate("Wed, 07 Aug 2019 04:00:00 GMT"),
+      finish: Time.httpdate("Wed, 07 Aug 2019 21:30:00 GMT")} }
+  end
+  # Check that the app redirects to index and correctly calculates pay.
+  follow_redirect!
+  assert_template 'timesheets/index'
+  assert Timesheet.last.pay == 445.5
+end
+
+test "valid timesheet information wednesday outside peak" do
+  get new_path
+  assert_difference 'Timesheet.count', 1 do
+    post timesheets_path, params: { timesheet:{
+      date: Date.new(2019,8,7),
+      start: Time.httpdate("Wed, 07 Aug 2019 05:00:00 GMT"),
+      finish: Time.httpdate("Wed, 07 Aug 2019 06:30:00 GMT")} }
+  end
+  # Check that the app redirects to index and correctly calculates pay.
+  follow_redirect!
+  assert_template 'timesheets/index'
+  assert Timesheet.last.pay == 49.5
+end
+```
 
 Tests are extremely useful in order to check that your app behaves as intended, and to catch any regressions in your code. Of course, in order to catch these regressions, your tests need to cover your code effectively. This is where code coverage analysis tools such as [SimpleCov](https://github.com/colszowka/simplecov) come in. These will analyse your code for you, telling you which lines of code are covered by your automated tests. I used [Andy Croll's tutorial](https://andycroll.com/ruby/use-simplecov/) to get SimpleCov up and running, and make sure it ignored the appropriate files. It is worth mentioning that you don't necessarily need to aim for 100% code coverage, and having 100% coverage doesn't mean that your program will be error-free. However, it is still useful to see which parts of your code aren't covered by automated testing, and consider whether you should write extra tests.
 
-With the basic timesheet app up and running, this week's project is complete. There are obviously many more features that could be added to this app; for example, the ability to edit or delete timesheets, or create users to whom the timesheets could belong. We also haven't looked at bootstrap and css, which were both used to make this app look a little bit nicer. Nevertheless, it introduces a few handy Rails concepts that I hadn't used before this project.
+With the basic timesheet app up and running, this week's project is complete. There are obviously many more features that could be added to this app; for example, the ability to edit or delete timesheets, or create users to whom the timesheets could belong. We also haven't looked at bootstrap and css, which were both used (in moderation) to make this app look a little bit nicer. Nevertheless, it introduces a few useful Rails concepts that I hadn't used before this project.
