@@ -27,7 +27,7 @@ Based on the information entered by the user, the app calculates a dollar value 
     + $35/hour during other times of day (off-peak hours).
 + On weekends, the rate is always $47/hour.
 
-To calculate the dollar value on weekdays, we need to determine how many hours are worked during the daytime, and how many are off-peak. For this, we first find the intersection between the following time intervals: 
+After creating a basic Rails app with a Timesheets controller, we begin by creating a function to calculate the value of a timesheet. For timesheets on weekdays, we will need to determine how many hours are worked during the daytime, and how many are off-peak. That is, we will find the intersection between the following time intervals: 
 + ```a```, the time interval worked, and 
 + ```b```, the time interval 7am-7pm or 5am-5pm, depending on the day.
 
@@ -46,7 +46,9 @@ def time_intersection(start_a, finish_a, start_b, finish_b)
 end
 ```
 
-To determine the dollar value, we can then multiply each time interval by the appropriate rate, splitting weekday hours into daytime and off-peak as necessary. To determine which day of the week the timesheet represents, Ruby's `Date` class has built in methods that make it easy for us. Using `monday?` will return true if the given date is a Monday, and analogous methods exist for all other days of the week. So, then, our calculations to determine dollar value are as follows:
+To determine the dollar value, we can then multiply each time interval by the appropriate rate, splitting weekday hours into daytime and off-peak as necessary. 
+
+To determine which day of the week the timesheet represents, Ruby's `Date` class has built in methods that make it easy for us. Using `monday?`, for example, will return true if the given date is a Monday, and analogous methods exist for all other days of the week. So then, our calculations to determine dollar value are as follows:
 
 ```ruby
 # date here should be a 'Date' object, and start and finish should be 'Time' objects
@@ -77,7 +79,9 @@ def timesheet_value(date, start, finish)
 end
 ``` 
 
-These methods are both placed in the helper file, and the helper is included in the relevant controller. In this case, we have a controller called ```timesheets_controller``` so our helper file is ```timesheets_helper.rb```. We next turn our attention to our ```timesheet``` model, how to create timesheets using a form and how to validate user input. I used a form based on the one Michael Hartl describes in his [Rails Tutorial](https://www.railstutorial.org/book). However, note that the tutorial uses ```form_for```, which is now soft-deprecated. We will use the ```form_with``` helper instead:
+These methods are both placed in the helper file, which must be included in the relevant controller. In this case, we have a controller called `timesheets_controller` so our helper file is `timesheets_helper.rb`. 
+
+We next turn our attention to our `timesheet` model, creating timesheets using a form and how to validate user input. I used a form based on the one Michael Hartl describes in his [Rails Tutorial](https://www.railstutorial.org/book). However, note that the tutorial uses `form_for`, which is now soft-deprecated. We will use the `form_with` helper instead:
 
 ```erb
 <div class="row">
@@ -101,7 +105,7 @@ These methods are both placed in the helper file, and the helper is included in 
 </div>
 ```
 
-Since Turbolinks does not support ```render```, you can use the ```turbolinks_render``` gem to ensure the error messages get rendered. To retrieve the error messages, the code in ```app/views/shared/_error_messages.html.erb```, is as follows:
+Since Turbolinks does not support `render`, you can use the `turbolinks_render` gem to ensure the error messages display correctly. To retrieve the error messages, the code in `app/views/shared/_error_messages.html.erb`, is as follows:
 
 ```erb
 <% if @timesheet.errors.any? %>
@@ -118,7 +122,9 @@ Since Turbolinks does not support ```render```, you can use the ```turbolinks_re
 <% end %>
 ```
 
-Now to make sure we are displaying the error messages we need, we will write validations. Ruby has already created the file ```app/models/timesheet.rb``` for us, and our presence validations can be added easily:
+You might have noticed from the above code that Rails has a nice helper called `pluralize`; this takes a number and a singular noun, and will pluralise the noun unless the number is 1. Using this, we can avoid having gramatically incorrect sentences without having to write our own `if` statement.
+
+Now, to make sure appropriate error messages are generated, we will write validations. Ruby has already created the file `app/models/timesheet.rb` for us, and this is where we will add our validations. `Timesheet` inherits from `Active Record`, which includes many pre-defined helpers such as `presence`, which we will use now:
 
 ```ruby
 validates :start, presence: true
@@ -126,7 +132,7 @@ validates :finish, presence: true
 validates :date, presence: true
 ```
 
-To ensure the other conditions are met, we can write custom validation methods. These methods must be registered using the ```validate``` class method:
+For our other conditions, we can write custom validation methods. In addition to writing the methods, we must register each of them using the ```validate``` class method. So, to ensure that the user has specified a date and times that are valid, we include the following code in `timesheet.rb`:
 
 ```ruby
 validate :date_cannot_be_in_future
@@ -160,9 +166,9 @@ def timesheet_entries_must_not_overlap
 end
 ```
 
-Notice that ```Timesheet``` can be used to access all the timesheets that have been saved so far, and we can use ```where.not(id: self.id)``` to ensure that we don't include the current timesheet in our validation. For example, we need to update timesheets (after calculating their pay); if we don't exclude the current timesheet, we will be unable to update it because its time frame overlaps with itself.
+Notice that `Timesheet` can be used to access all the timesheets that have been saved so far, and we can use `where.not(id: self.id)` to ensure that we don't include the current timesheet in our validation. For example, after calculating the value of a timesheet we will need to re-save it. However, if we don't exclude the current timesheet from our validation, we will be unable to update it because its time frame overlaps with itself.
 
-To make sure our validations are working, we need to write some tests. Unit tests for our timesheet reside in ```test/models/timesheet_test.rb```. At the beginning of the class, we will define a setup method that includes valid input for a timesheet:
+Just as important as writing validations is writing tests to accompany them. The idea of automated tests is to assert that the program behaves correctly, without having to manually test the same things over again after you update your code. Unit tests for our timesheet reside in `test/models/timesheet_test.rb`. At the beginning of the class, we will define a setup method that includes valid input for a timesheet:
 
 ```ruby
 def setup
@@ -170,13 +176,20 @@ def setup
 end
 ```
 
-We can then include a test to make sure that the default information results in a valid timesheet being created. After that, each of our tests will involve making a timesheet invalid in a single way, and asserting that the timesheet is not valid. For example, we might remove a piece of information that is required or create a timesheet whose date is in the future. Each of our tests is straightforward, so you should get an idea of what each test does by simply reading it:
+We can then include a test to make sure that the default information results in a valid timesheet being created.
 
 ```ruby
 test "should be valid" do
   assert @timesheet.valid?
 end
+```
 
+To run tests, execute `rails test` or `rails t` from the app's root directory in your console. The string between `test` and `do` is what will be displayed if the test fails. For example, if `Timesheet` decides that your default timesheet is not valid, you will get an error message along the lines of: 
+<p style="text-align: center; font-family: monospace, monospace;font-size: 0.85em; background-color: #e9f1f5">timesheet_test#test_should_be_valid: Expected false to be truthy</p>
+
+This error message will, of course, differ depending on your environment. After the `should be valid` test, our tests will involve making a timesheet invalid in a single way, and asserting that the timesheet is not valid. For example, we might remove a piece of information that is required or create a timesheet whose date is in the future. By reading the tests below, you should get an idea of what each test does:
+
+```ruby
 test "date must be present" do
   @timesheet.date = nil
   assert_not @timesheet.valid?
@@ -204,9 +217,9 @@ test "date cannot be in future" do
 end
 ```
 
-Whilst these tests help us with simple errors, they still do not check for overlapping timesheet entries. They also do not consider timesheet pay calculations, or whether our pages are loading correctly. For that we will use integration tests; to get started we will simply run
+Whilst these tests help us with simple errors, they still do not check for overlapping timesheet entries. They also do not consider timesheet pay calculations, or whether our pages are loading correctly. For that we will use integration tests; to get started we will execute
 <p style="text-align: center; font-family: monospace, monospace;font-size: 0.85em; background-color: #e9f1f5">rails generate integration_test timesheets_new</p>
-in our console and Rails will generate the file ```timesheets_new_test.rb``` in ```test/integration``` for us.
+in our console. If `generate` is too long, you can replace it with just `g`. After running this command, Rails will generate the file `timesheets_new_test.rb` in `test/integration` for us.
 
 First, we will write a test to check that invalid timesheets are not saved. In addition to asserting no timesheet is saved when invalid information is given, we will also assert that the "Create Timesheet" page is re-rendered, with error messages displayed and fields with errors highlighted:
 
@@ -302,6 +315,8 @@ test "valid timesheet information wednesday outside peak" do
 end
 ```
 
-Tests are extremely useful in order to check that your app behaves as intended, and to catch any regressions in your code. Of course, in order to catch these regressions, your tests need to cover your code effectively. This is where code coverage analysis tools such as [SimpleCov](https://github.com/colszowka/simplecov) come in. These will analyse your code for you, telling you which lines of code are covered by your automated tests. I used [Andy Croll's tutorial](https://andycroll.com/ruby/use-simplecov/) to get SimpleCov up and running, and make sure it ignored the appropriate files. It is worth mentioning that you don't necessarily need to aim for 100% code coverage, and having 100% coverage doesn't mean that your program will be error-free. However, it is still useful to see which parts of your code aren't covered by automated testing, and consider whether you should write extra tests.
+Tests are extremely useful in order to check that your app behaves as intended, and to catch any regressions in your code. Of course, in order to catch these regressions, your tests need to cover your code effectively. 
+
+This is where code coverage analysis tools such as [SimpleCov](https://github.com/colszowka/simplecov) come in. These will analyse your code for you, telling you which lines of code are covered by your automated tests. I used [Andy Croll's tutorial](https://andycroll.com/ruby/use-simplecov/) to get SimpleCov up and running, and to make sure it ignored the appropriate files. It is worth mentioning that you don't necessarily need to aim for 100% code coverage, and having 100% coverage doesn't mean that your program will be error-free. However, it is still useful to see which parts of your code aren't covered by automated testing, and consider whether you should write extra tests.
 
 With the basic timesheet app up and running, this week's project is complete. There are obviously many more features that could be added to this app; for example, the ability to edit or delete timesheets, or create users to whom the timesheets could belong. We also haven't looked at bootstrap and css, which were both used (in moderation) to make this app look a little bit nicer. Nevertheless, it introduces a few useful Rails concepts that I hadn't used before this project.

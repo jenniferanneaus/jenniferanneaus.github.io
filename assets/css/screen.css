@@ -816,6 +816,7 @@ Usage (In Ghost editor):
 
 .post-full-content pre {
     overflow-x: auto;
+    white-space: pre-wrap;
     margin: 1.5em 0 3em;
     padding: 20px;
     max-width: 100%;
