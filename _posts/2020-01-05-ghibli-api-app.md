@@ -10,7 +10,7 @@ class: post-template
 subclass: 'post tag-ruby tag-rails'
 ---
 
-I have recently started to learn React and CSS, and set myself a small project. I had three main goals in mind: to use JavaScript to connect with an API, to learn more about React promises, and to create a responsive app that looks good on both wide and narrow screens.
+I have been learning React and CSS over the last few months, so recently set myself a small project. I had three main goals in mind: to use JavaScript to connect with an API, to learn more about React promises, and to create a responsive app that looks good on both wide and narrow screens.
 
 We won't cover the fundamentals of React or CSS in this post, but I've found [Scrimba](https://scrimba.com/) a useful tool in getting started. In particular, the [free React course](https://scrimba.com/g/glearnreact) by Bob Ziroll contains a video about [fetching data from an API](https://scrimba.com/p/p7P5Hd/c79Jask), which inspired this project.
 
