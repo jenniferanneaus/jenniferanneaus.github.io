@@ -1,7 +1,7 @@
 ---
 layout: post
 current: post
-cover:  assets/images/euler.jpg
+cover:  assets/images/covers/euler.jpg
 navigation: True
 title: Project Euler
 date: 2019-09-18 12:00:00
@@ -24,11 +24,11 @@ That is, we want to calculate $(1+2+...+100)^2-(1^2+2^2+...+100^2)$. Given that 
 + $\displaystyle\sum_1^n n^2 = \frac{n(n+1)(2n+1)}{6}$
 
 The first formula, for summation of the first $n$ natural numbers, is famously attributed to Gauss. It is said he was asked to calculate $1+2+...+100$ as a young schoolboy; though his teacher expected the problem to keep him occupied for a long time, Gauss cleverly noticed a pattern and solved the problem quite quickly. Using the sum $1+2+...+n$, we can visualise it as follows. First, we put the numbers 1 to $n$ in columns.
-![Sum of integers 1](assets/images/sum_natural_numbers_1.png)
+![Sum of integers 1](assets/images/posts/sum_natural_numbers_1.png)
 Then, we take another copy of the numbers 1 to $n$. Put this copy in reverse order, and place it below the first.
-![Sum of integers 2](assets/images/sum_natural_numbers_2.png)
+![Sum of integers 2](assets/images/posts/sum_natural_numbers_2.png)
 Now each column adds up to a total of $n+1$.
-![Sum of integers 3](assets/images/sum_natural_numbers_3.png)
+![Sum of integers 3](assets/images/posts/sum_natural_numbers_3.png)
 Therefore, we have a total of $n(n+1)$. However, since we added two copies of each integer instead of just one, we need to halve our answer to obtain $\displaystyle\sum_1^n n = \frac{n(n+1)}{2}$. Pretty cool, huh?
 
 Getting back to our code, we have two functions to write. To calculate $\displaystyle\sum_1^n n$ we have:
@@ -128,7 +128,7 @@ def create_sum(n, primes):
 	return 0
 ```
 
-So there we have it, problem solved! There are hundreds of questions on the Project Euler website, each with a different balance of coding skills and mathematical know-how. My next blog post is about [Sum of Squares]({% post_url 2019-09-21-sum-of-squares %}), another problem from Project Euler that turned out to be mathematically challenging and worthy of a separate post. To see the Python files, visit [my GitHub repository](https://github.com/jenniferanne1991/project_euler_code).
+So there we have it, problem solved! There are hundreds of questions on the Project Euler website, each with a different balance of coding skills and mathematical know-how. My next blog post is about [Sum of Squares]({% post_url 2019-09-21-sum-of-squares %}), another problem from Project Euler that turned out to be mathematically challenging and worthy of a separate post. To see the Python files, visit [my GitHub repository](https://github.com/jenniferanneaus/project_euler_code).
 
 <a name="footnote"></a>
 <br>

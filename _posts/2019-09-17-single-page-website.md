@@ -1,20 +1,28 @@
 ---
 layout: post
 current: post
-cover:  assets/images/cherry-tomatoes.jpg
+cover:  assets/images/covers/cherry-tomatoes.jpg
 navigation: True
 title: Creating a Single Page Website with Bootstrap
 date: 2019-09-17 18:00:00
-tags: [rails, bootstrap, html, css]
+tags: [rails, bootstrap]
 class: post-template
 subclass: 'post tag-rails tag-bootstrap tag-html tag-css'
 ---
 
 The goal for this project was to use a Bootstrap theme and apply it to a project of my own, gaining more of an appreciation of front end development.
 
-My project uses the [Grayscale](https://startbootstrap.com/themes/grayscale/) theme by Start Bootstrap. For complete beginners, there's a [tutorial on Medium](https://medium.com/@yli0607x/how-to-use-bootstrap-themes-on-ruby-on-rails-in-5-minutes-8e6f9542f6d8) that explains how to configure your Rails app to get started with themes. Once the basic structure was already in place, customising the theme was a lot of fun. The images in the website are all from [Pixabay](https://pixabay.com/) or [Pexels](https://www.pexels.com/), which both have excellent collections of free pictures.
+Although Rails has been interesting to learn, there's something unsatisfying about creating apps that consist of plain text and unstyled buttons. Having used some basic Bootstrap features in tutorials, I wanted to learn more about how to integrate and customise Bootstrap themes in Rails apps. My project uses the [Grayscale](https://startbootstrap.com/themes/grayscale/) theme by Start Bootstrap. 
 
-After following the instructions in the tutorial, I created a file called ```custom.css.scss``` in the ```/app/assets/stylesheets``` folder. The ```.scss``` extension tells the asset pipeline to preprocess this file using Sass, and the ```.css``` extension indicates it is a CSS file. The first class I wrote in my custom CSS file was to define a column that takes up half the horizontal width of the page; the Grayscale theme has a contact section with three columns (address, email and phone) but I only wanted two. The code for this was quite simple:
+There are a few tutorials out there to help you get started, and I used [this one](https://medium.com/@yli0607x/how-to-use-bootstrap-themes-on-ruby-on-rails-in-5-minutes-8e6f9542f6d8). The basic idea is that, once your app has the necessary gems in place, you can use a theme by copying the HTML from an existing example into either your ```app/views/layouts/application.html.erb``` file (for global styles) or one of the ```.html.erb``` files in the ```app/views``` folder (for page specific styles). Once the basic structure is already in place, customising the theme is a lot of fun and doesn't require any in-depth knowledge of HTML or CSS. The images I used are from [Pixabay](https://pixabay.com/) and [Pexels](https://www.pexels.com/), which both have excellent collections of free pictures. Some screenshots from my app are below.
+
+![Tomatoes of Thomastown header: seedlings and lots of different coloured tomatoes](assets/images/posts/tomatoes_1.jpg)
+![Tomatoes of Thomastown main body: descriptions about the tomato varieties I am currently growing](assets/images/posts/tomatoes_2.jpg)
+![Tomatoes of Thomastown footer](assets/images/posts/tomatoes_3.jpg)
+
+To add custom css to your project, you can create a ```custom.css.scss``` file in the ```/app/assets/stylesheets``` folder and write your custom code there. The ```.scss``` extension tells the asset pipeline to preprocess the file using Sass, which gets compiled back to standard CSS but offers additional syntax such as functions and nested rules. For more about what Sass can do, check out [this article](https://www.freecodecamp.org/news/the-complete-guide-to-scss-sass-30053c266b23/). 
+
+In your ```custom.css.scss``` file, it is fairly straightforward to tweak the appearance of your chosen theme. The first class I wrote was to define a column that takes up half the horizontal width of the page, since the Grayscale theme has a contact section with three columns (address, email and phone) but I didn't want the third one. The code for this was as follows:
 
 ```css
 .column-half {
@@ -25,17 +33,16 @@ After following the instructions in the tutorial, I created a file called ```cus
 }
 ```
 
-Overall I added just under a dozen CSS classes, to do minor things like change the masthead picture and the appearance of certain sections of text. Moving on to the HTML code, I needed to change the "project" images to my "tomatoes" images. Previously, the images were placed on the page using the code:
+Overall I added just under a dozen CSS classes. I also made minor changes to the HTML code to ensure the custom classes were being used and, of course, to change the text on the webpage. For the images, I changed the existing HTML code:
 ```html
 <img class="img-fluid" src="img/demo-image-01.jpg" alt="">
 ```
-Since I was working in Rails, I used embedded ruby to insert the images. Embedded ruby makes it easy to reference images in [the asset pipeline](https://guides.rubyonrails.org/asset_pipeline.html) as the path to the file does not need to be written in full. For example, after placing my ```tomatoes.jpg``` file in the ```app/assets/images``` folder, this code could be used to display the image:
+to embedded ruby code:
 ```erb
 <%= image_tag("tomatoes.jpg", :alt => "", :class => 'img-fluid') %>
 ```
+which makes it easier to reference images in [the asset pipeline](https://guides.rubyonrails.org/asset_pipeline.html). All I needed to do was make sure my ```tomatoes.jpg``` image was in the ```app/assets/images``` folder, and then the embedded ruby code works without having to write the full path to the file.
 
-Once I was happy with how the app looked, I deployed it to [Heroku](https://www.heroku.com/). This is a great way to test whether your app works in production; for those who want to learn more, Michael Hartl has written a very helpful [Rails tutorial](https://www.railstutorial.org/) that includes instructions for setting up and using Heroku.
+Once I was happy with how the app looked, I deployed it to [Heroku](https://www.heroku.com/). This is a great way to test whether your app displays and behaves correctly in production. For those who want to learn more, Michael Hartl has written a very helpful [Rails tutorial](https://www.railstutorial.org/) that includes instructions for setting up and using Heroku. It turned out my deployed app was not displaying correctly in Chrome, due to some incorrectly placed tags. To help identify my mistakes, [Validator.nu](https://html5.validator.nu/) was very helpful - it is an online HTML validator which checks the source code for your site, and warns you of stray or incorrectly placed tags.
 
-It turned out my app had a few bugs; these weren't visible when viewed in development mode or in Firefox/Edge/IE, but the deployed website displayed incorrectly in Chrome. An invaluable resource in debugging these issues was [Validator.nu](https://html5.validator.nu/), an HTML validator which checks the source code for your site and will warn you of any tags that are stray or incorrectly placed. As HTML is still new and somewhat unfamiliar to me, I had placed some of my elements incorrectly. So, then, this was a good opportunity to learn.
-
-After the app was debugged and successfully deployed, my first foray into customising a Bootstrap theme was complete. You can see the source code for my project [here](https://github.com/jenniferanne1991/grayscale_theme_app), or view the deployed website [here](http://tomatoes-of-thomastown.herokuapp.com/).
+After the app was debugged and successfully deployed, my first foray into customising a Bootstrap theme was complete. You can see the source code for my project [here](https://github.com/jenniferanneaus/grayscale_theme_app) (the deployed version on Heroku is no longer active).

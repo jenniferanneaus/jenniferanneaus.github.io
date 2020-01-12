@@ -1,7 +1,7 @@
 ---
 layout: post
 current: post
-cover:  assets/images/timesheet.jpg
+cover:  assets/images/covers/timesheet.jpg
 navigation: True
 title: Timesheet App
 date: 2019-08-13 18:00:00
@@ -10,7 +10,7 @@ class: post-template
 subclass: 'post tag-ruby tag-rails'
 ---
 
-Last week I created a [timesheet application](https://github.com/jenniferanne1991/timesheet_app) using Ruby on Rails. The app is basic, but working through it provided valuable opportunities to learn more about testing, validation and other Rails essentials.
+Last week I created a [timesheet application](https://github.com/jenniferanneaus/timesheet_app) using Ruby on Rails. The app is basic, but working through it provided valuable opportunities to learn more about testing, validation and other Rails essentials.
 
 The task was to create a timesheet entry application consisting of two pages. The first page allows users to create a new timesheet, and the other lists all stored timesheets. When users try to create a new timesheet, the app should check that the entry contains valid information before saving it. A timesheet entry is considered "valid" if it fulfils the following requirements:
 + It must not overlap with any existing timesheet entries.
