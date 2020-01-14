@@ -4,10 +4,10 @@ current: post
 cover:  assets/images/covers/ghibli.jpg
 navigation: True
 title: Studio Ghibli API App
-date: 2020-01-04 08:00:00
+date: 2020-01-05 08:00:00
 tags: [react, css]
 class: post-template
-subclass: 'post tag-ruby tag-rails'
+subclass: 'post tag-react tag-css'
 ---
 
 I have been learning React and CSS over the last few months, so recently set myself a small project. I had three main goals in mind: to use JavaScript to connect with an API, to learn more about React promises, and to create a responsive app that looks good on both wide and narrow screens.
