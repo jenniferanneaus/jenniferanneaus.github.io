@@ -125,7 +125,11 @@ figure.highlight,
 td.code {
     border: none;
     min-width: 100%;
-    max-width: 100%;
+    max-width: 100vw;
+}
+
+.highlight {
+    width: 100vw;
 }
 
 .highlight table,
