@@ -14,7 +14,10 @@ I have been learning React and CSS over the last few months, so recently set mys
 
 We won't cover the fundamentals of React or CSS in this post, but I've found [Scrimba](https://scrimba.com/) a useful tool in getting started. In particular, the [free React course](https://scrimba.com/g/glearnreact) by Bob Ziroll contains a video about [fetching data from an API](https://scrimba.com/p/p7P5Hd/c79Jask), which inspired this project.
 
-To begin, we look at the basic call to fetch data from an API. As someone who enjoys anime, I was excited to learn that a [Studio Ghibli API](https://ghibliapi.herokuapp.com/) exists. This catalogs various aspects of the Ghibli universe, including films and characters. To retrieve data from the API we can use ```fetch()```, passing the url as a parameter. So, if we want the characters, we would use ```fetch("https://ghibliapi.herokuapp.com/people")```.
+To begin, we look at the basic call to fetch data from an API. As someone who enjoys anime, I was excited to learn that a [Studio Ghibli API](https://ghibliapi.herokuapp.com/) exists. This catalogs various aspects of the Ghibli universe, including films and characters. To retrieve data from the API we can use ```fetch()```, passing the url as a parameter. So, if we want the characters, we would use the following:
+```javascript
+fetch("https://ghibliapi.herokuapp.com/people")
+```
 
 An important thing to note is that retrieving data takes time. This presents us with two problems. First, we want to let the user know the app is loading. Second, we cannot make the call to store or process the data until after the data has been retrieved. This is where promises come in.
 
