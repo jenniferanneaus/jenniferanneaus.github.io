@@ -4,7 +4,7 @@ current: post
 cover:  assets/images/covers/twelve-dom.jpg
 navigation: True
 title: Twelve Days of Mechsmas
-date: 2020-01-13 20:00:00
+date: 2020-01-14 20:00:00
 tags: [react, css]
 class: post-template
 subclass: 'post tag-react tag-css'
