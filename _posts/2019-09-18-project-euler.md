@@ -5,7 +5,7 @@ cover: assets/images/covers/euler.jpg
 navigation: True
 title: Project Euler
 date: 2019-09-18 12:00:00
-tags: python maths
+# tags: python maths
 class: post-template
 subclass: "post tag-python tag-maths"
 ---

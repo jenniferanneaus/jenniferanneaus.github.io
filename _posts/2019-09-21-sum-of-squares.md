@@ -5,7 +5,7 @@ cover: assets/images/covers/squares.jpg
 navigation: True
 title: Sum of Squares
 date: 2019-09-21 10:15:00
-tags: python maths
+# tags: python maths
 class: post-template
 subclass: "post tag-python tag-maths"
 ---

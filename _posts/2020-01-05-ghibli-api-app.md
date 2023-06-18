@@ -5,7 +5,7 @@ cover: assets/images/covers/ghibli.jpg
 navigation: True
 title: Studio Ghibli API App
 date: 2020-01-05 08:00:00
-tags: react css
+# tags: react css
 class: post-template
 subclass: "post tag-react tag-css"
 ---

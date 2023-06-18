@@ -5,7 +5,7 @@ cover: assets/images/covers/tasmania.jpg
 navigation: True
 title: Tasmania Website
 date: 2020-02-02 14:00:00
-tags: html css
+# tags: html css
 class: post-template
 subclass: "post tag-html tag-css"
 ---

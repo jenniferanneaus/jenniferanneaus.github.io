@@ -5,7 +5,7 @@ cover: assets/images/covers/cherry-tomatoes.jpg
 navigation: True
 title: Creating a Single Page Website with Bootstrap
 date: 2019-09-17 18:00:00
-tags: rails bootstrap
+# tags: rails bootstrap
 class: post-template
 subclass: "post tag-rails tag-bootstrap tag-html tag-css"
 ---

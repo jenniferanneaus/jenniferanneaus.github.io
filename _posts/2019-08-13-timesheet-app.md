@@ -5,7 +5,7 @@ cover: assets/images/covers/timesheet.jpg
 navigation: True
 title: Timesheet App
 date: 2019-08-13 18:00:00
-tags: ruby rails
+# tags: ruby rails
 class: post-template
 subclass: "post tag-ruby tag-rails"
 ---
