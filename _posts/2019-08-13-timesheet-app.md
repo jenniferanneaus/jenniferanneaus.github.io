@@ -1,37 +1,40 @@
 ---
 layout: post
 current: post
-cover:  assets/images/covers/timesheet.jpg
+cover: assets/images/covers/timesheet.jpg
 navigation: True
 title: Timesheet App
 date: 2019-08-13 18:00:00
-tags: [ruby, rails]
+tags: ruby rails
 class: post-template
-subclass: 'post tag-ruby tag-rails'
+subclass: "post tag-ruby tag-rails"
 ---
 
 Last week I created a [timesheet application](https://github.com/jenniferanneaus/timesheet_app) using Ruby on Rails. The app is basic, but working through it provided valuable opportunities to learn more about testing, validation and other Rails essentials.
 
 The task was to create a timesheet entry application consisting of two pages. The first page allows users to create a new timesheet, and the other lists all stored timesheets. When users try to create a new timesheet, the app should check that the entry contains valid information before saving it. A timesheet entry is considered "valid" if it fulfils the following requirements:
-+ It must not overlap with any existing timesheet entries.
-+ Its date must not be in the future.
-+ The finish time must be after the start time.
-+ A valid date, start time and finish time must be given.
+
+- It must not overlap with any existing timesheet entries.
+- Its date must not be in the future.
+- The finish time must be after the start time.
+- A valid date, start time and finish time must be given.
 
 Based on the information entered by the user, the app calculates a dollar value for each timesheet. The value is calculated according to the following rules:
-+ On Mondays, Wednesdays and Fridays, the rate is:
-    + $22/hour between 7am and 7pm (call these daytime hours),
-    + $33/hour during other times of day (call these off-peak hours).
-+ On Tuesdays and Thursdays, the rate is:
-    + $25/hour between 5am and 5pm (daytime hours),
-    + $35/hour during other times of day (off-peak hours).
-+ On weekends, the rate is always $47/hour.
 
-After creating a basic Rails app with a Timesheets controller, we begin by creating a function to calculate the value of a timesheet. For timesheets on weekdays, we will need to determine how many hours are worked during the daytime, and how many are off-peak. That is, we will find the intersection between the following time intervals: 
-+ ```a```, the time interval worked, and 
-+ ```b```, the time interval 7am-7pm or 5am-5pm, depending on the day.
+- On Mondays, Wednesdays and Fridays, the rate is:
+  - $22/hour between 7am and 7pm (call these daytime hours),
+  - $33/hour during other times of day (call these off-peak hours).
+- On Tuesdays and Thursdays, the rate is:
+  - $25/hour between 5am and 5pm (daytime hours),
+  - $35/hour during other times of day (off-peak hours).
+- On weekends, the rate is always $47/hour.
 
-The number of hours worked during the daytime is the intersection between ```a``` and ```b```, which can be calculated using the following code:
+After creating a basic Rails app with a Timesheets controller, we begin by creating a function to calculate the value of a timesheet. For timesheets on weekdays, we will need to determine how many hours are worked during the daytime, and how many are off-peak. That is, we will find the intersection between the following time intervals:
+
+- `a`, the time interval worked, and
+- `b`, the time interval 7am-7pm or 5am-5pm, depending on the day.
+
+The number of hours worked during the daytime is the intersection between `a` and `b`, which can be calculated using the following code:
 
 ```ruby
 # parameters start_a, finish_a, start_b and finish_b are 'Time' objects
@@ -46,7 +49,7 @@ def time_intersection(start_a, finish_a, start_b, finish_b)
 end
 ```
 
-To determine the dollar value, we can then multiply each time interval by the appropriate rate, splitting weekday hours into daytime and off-peak as necessary. 
+To determine the dollar value, we can then multiply each time interval by the appropriate rate, splitting weekday hours into daytime and off-peak as necessary.
 
 To determine which day of the week the timesheet represents, Ruby's `Date` class has built in methods that make it easy for us. Using `monday?`, for example, will return true if the given date is a Monday, and analogous methods exist for all other days of the week. So then, our calculations to determine dollar value are as follows:
 
@@ -77,9 +80,9 @@ def timesheet_value(date, start, finish)
    end
    return dollar_value
 end
-``` 
+```
 
-These methods are both placed in the helper file, which must be included in the relevant controller. In this case, we have a controller called `timesheets_controller` so our helper file is `timesheets_helper.rb`. 
+These methods are both placed in the helper file, which must be included in the relevant controller. In this case, we have a controller called `timesheets_controller` so our helper file is `timesheets_helper.rb`.
 
 We next turn our attention to our `timesheet` model, creating timesheets using a form and how to validate user input. I used a form based on the one Michael Hartl describes in his [Rails Tutorial](https://www.railstutorial.org/book). However, note that the tutorial uses `form_for`, which is now soft-deprecated. We will use the `form_with` helper instead:
 
@@ -132,7 +135,7 @@ validates :finish, presence: true
 validates :date, presence: true
 ```
 
-For our other conditions, we can write custom validation methods. In addition to writing the methods, we must register each of them using the ```validate``` class method. So, to ensure that the user has specified a date and times that are valid, we include the following code in `timesheet.rb`:
+For our other conditions, we can write custom validation methods. In addition to writing the methods, we must register each of them using the `validate` class method. So, to ensure that the user has specified a date and times that are valid, we include the following code in `timesheet.rb`:
 
 ```ruby
 validate :date_cannot_be_in_future
@@ -184,7 +187,8 @@ test "should be valid" do
 end
 ```
 
-To run tests, execute `rails test` or `rails t` from the app's root directory in your console. The string between `test` and `do` is what will be displayed if the test fails. For example, if `Timesheet` decides that your default timesheet is not valid, you will get an error message along the lines of: 
+To run tests, execute `rails test` or `rails t` from the app's root directory in your console. The string between `test` and `do` is what will be displayed if the test fails. For example, if `Timesheet` decides that your default timesheet is not valid, you will get an error message along the lines of:
+
 <p style="text-align: center; font-family: monospace, monospace;font-size: 0.85em; background-color: #e9f1f5">timesheet_test#test_should_be_valid: Expected false to be truthy</p>
 
 This error message will, of course, differ depending on your environment. After the `should be valid` test, our tests will involve making a timesheet invalid in a single way, and asserting that the timesheet is not valid. For example, we might remove a piece of information that is required or create a timesheet whose date is in the future. By reading the tests below, you should get an idea of what each test does:
@@ -218,6 +222,7 @@ end
 ```
 
 Whilst these tests help us with simple errors, they still do not check for overlapping timesheet entries. They also do not consider timesheet pay calculations, or whether our pages are loading correctly. For that we will use integration tests; to get started we will execute
+
 <p style="text-align: center; font-family: monospace, monospace;font-size: 0.85em; background-color: #e9f1f5">rails generate integration_test timesheets_new</p>
 in our console. If `generate` is too long, you can replace it with just `g`. After running this command, Rails will generate the file `timesheets_new_test.rb` in `test/integration` for us.
 
@@ -238,12 +243,12 @@ test "invalid timesheet information" do
 end
 ```
 
-This introduces us to the main tools we will use in our integration tests: telling Rails we are interested in the "Create Timesheet" page using ```get new_path```, then asserting whether or not there is a difference in count and asserting the correct template is rendered. The other integration tests we will include correspond to timesheet pay calculations and overlapping timesheet entries. Again, the code is fairly straighforward to read:
+This introduces us to the main tools we will use in our integration tests: telling Rails we are interested in the "Create Timesheet" page using `get new_path`, then asserting whether or not there is a difference in count and asserting the correct template is rendered. The other integration tests we will include correspond to timesheet pay calculations and overlapping timesheet entries. Again, the code is fairly straighforward to read:
 
 ```ruby
 test "overlapping timesheet entries" do
-  Timesheet.create(date: Date.new(2000,1,1), 
-    start: Time.httpdate("Sat, 01 Jan 2000 09:00:00 GMT"), 
+  Timesheet.create(date: Date.new(2000,1,1),
+    start: Time.httpdate("Sat, 01 Jan 2000 09:00:00 GMT"),
     finish: Time.httpdate("Sat, 01 Jan 2000 17:00:00 GMT"))
   get new_path
   # Check that if an overlapping timesheet entry is submitted, it does not save.
@@ -315,7 +320,7 @@ test "valid timesheet information wednesday outside peak" do
 end
 ```
 
-Tests are extremely useful in order to check that your app behaves as intended, and to catch any regressions in your code. Of course, in order to catch these regressions, your tests need to cover your code effectively. 
+Tests are extremely useful in order to check that your app behaves as intended, and to catch any regressions in your code. Of course, in order to catch these regressions, your tests need to cover your code effectively.
 
 This is where code coverage analysis tools such as [SimpleCov](https://github.com/colszowka/simplecov) come in. These will analyse your code for you, telling you which lines of code are covered by your automated tests. I used [Andy Croll's tutorial](https://andycroll.com/ruby/use-simplecov/) to get SimpleCov up and running, and to make sure it ignored the appropriate files. It is worth mentioning that you don't necessarily need to aim for 100% code coverage, and having 100% coverage doesn't mean that your program will be error-free. However, it is still useful to see which parts of your code aren't covered by automated testing, and consider whether you should write extra tests.
 

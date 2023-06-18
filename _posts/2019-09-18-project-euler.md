@@ -1,27 +1,27 @@
 ---
 layout: post
 current: post
-cover:  assets/images/covers/euler.jpg
+cover: assets/images/covers/euler.jpg
 navigation: True
 title: Project Euler
 date: 2019-09-18 12:00:00
-tags: [python, maths]
+tags: python maths
 class: post-template
-subclass: 'post tag-python tag-maths'
+subclass: "post tag-python tag-maths"
 ---
 
 When I was searching for coding challenges recently, I came across [Project Euler](https://projecteuler.net/). This website has problems that range in difficulty, but generally involve a mixture of skills in mathematics and coding. I decided to try a few problems in Python, which turned out to be a lot of fun.
 
-I started with Problem 6; to skip ahead to my discussion of other problems you can click [here for Problem 1](#problem-1) or [here for Problem 46](#problem-46). 
+I started with Problem 6; to skip ahead to my discussion of other problems you can click [here for Problem 1](#problem-1) or [here for Problem 46](#problem-46).
 
 [Problem 6](https://projecteuler.net/problem=6) is a simple question, which asks:
 
 > Find the difference between the sum of the squares of the first one hundred natural numbers and the square of the sum.
 
-That is, we want to calculate $(1+2+...+100)^2-(1^2+2^2+...+100^2)$. Given that 100 is small in computer terms, this problem could easily be solved using a ```for``` loop. However, calculating sums for $n$ and $n^2$ reminded me of the maths I was teaching not so long ago. <a name="return-from-footnote"></a> I decided to use the formulae for these sums to make my solution efficient, and easily able to be scaled up to numbers much larger than 100. The two formulae[$^1$](#footnote) are as follows:
+That is, we want to calculate $(1+2+...+100)^2-(1^2+2^2+...+100^2)$. Given that 100 is small in computer terms, this problem could easily be solved using a `for` loop. However, calculating sums for $n$ and $n^2$ reminded me of the maths I was teaching not so long ago. <a name="return-from-footnote"></a> I decided to use the formulae for these sums to make my solution efficient, and easily able to be scaled up to numbers much larger than 100. The two formulae[$^1$](#footnote) are as follows:
 
-+ $\displaystyle\sum_1^n n = \frac{n(n+1)}{2}$
-+ $\displaystyle\sum_1^n n^2 = \frac{n(n+1)(2n+1)}{6}$
+- $\displaystyle\sum_1^n n = \frac{n(n+1)}{2}$
+- $\displaystyle\sum_1^n n^2 = \frac{n(n+1)(2n+1)}{6}$
 
 The first formula, for summation of the first $n$ natural numbers, is famously attributed to Gauss. It is said he was asked to calculate $1+2+...+100$ as a young schoolboy; though his teacher expected the problem to keep him occupied for a long time, Gauss cleverly noticed a pattern and solved the problem quite quickly. Using the sum $1+2+...+n$, we can visualise it as follows. First, we put the numbers 1 to $n$ in columns.
 ![Sum of integers 1](assets/images/posts/sum_natural_numbers_1.png)
@@ -54,17 +54,18 @@ def square_sums_difference(n):
   ans = sum(n) ** 2 - squares_sum(n)
   return ans
 ```
+
 <a name="problem-1"></a>
 and so Problem 6 of the Euler Project is complete.
 
-The next problem I looked at was [Problem 1](https://projecteuler.net/problem=1), which can also make use of our ```sum(n)``` function. A statement of the problem is below.
+The next problem I looked at was [Problem 1](https://projecteuler.net/problem=1), which can also make use of our `sum(n)` function. A statement of the problem is below.
 
 > Find the sum of all the multiples of 3 or 5 below 1000.
 
 To solve this problem, we need to make two observations:
 
-+ The sum $3+6+...+999$ is the same as the sum $3(1+2+...+333)$.
-+ If we add each multiple of 3 and then each multiple of 5, we will have counted each multiple of 15 twice.
+- The sum $3+6+...+999$ is the same as the sum $3(1+2+...+333)$.
+- If we add each multiple of 3 and then each multiple of 5, we will have counted each multiple of 15 twice.
 
 Using the first observation, we see that we can find the sum of all multiples of $n$ up to and including 999 by evaluating the sum $1+2+...+(999/n)$ and multiplying it by $n$. This gives us the following function:
 
@@ -83,8 +84,9 @@ def sum_two_factors(fact_one, fact_two, maximum):
 	- sum_one_factor(fact_one*fact_two, maximum)
 	return ans
 ```
+
 <a name="problem-46"></a>
-All we need to remember is that, given the problem specifies *below* 1000 and our functions include the maximum in their sum, we should call ```sum_two_factors(3,5,999)``` to get the correct answer.
+All we need to remember is that, given the problem specifies _below_ 1000 and our functions include the maximum in their sum, we should call `sum_two_factors(3,5,999)` to get the correct answer.
 
 The final problem I coded for this post is [Problem 46](https://projecteuler.net/problem=46), titled "Goldbach's Other Conjecture". The goal of this problem is to find the first counterexample to the following statement:
 
@@ -100,9 +102,9 @@ def is_prime(n):
 	return True
 ```
 
-Note that we have added 1 to ```math.sqrt(n)``` because ```range()``` excludes the upper bound. 
+Note that we have added 1 to `math.sqrt(n)` because `range()` excludes the upper bound.
 
-Since the question relates to odd numbers and all primes are odd except for 2, we will treat 2 as a special case and add it manually to a list called ```primes```. We then find the solution by iterating through odd numbers, starting with 3, and either adding them to our ```primes``` list or checking whether it satisfies the conjecture. The code for this is as follows:
+Since the question relates to odd numbers and all primes are odd except for 2, we will treat 2 as a special case and add it manually to a list called `primes`. We then find the solution by iterating through odd numbers, starting with 3, and either adding them to our `primes` list or checking whether it satisfies the conjecture. The code for this is as follows:
 
 ```python
 def disprove_goldbachs_other_conjecture():
@@ -118,7 +120,7 @@ def disprove_goldbachs_other_conjecture():
 		current = current + 2
 ```
 
-What remains is to write a function ```create_sum(n, primes)``` to check Goldbach's conjecture. We know that if a number $n$ is to be written as the sum of a prime and twice a square, then the prime must be smaller than $n$. In our case, the list ```primes``` already contains the potential candidates, so we will pass that to the function. We then check each prime $p$ in the list to see whether the difference between $n$ and $p$ is 2 times a perfect square. To do that, we can use the following:
+What remains is to write a function `create_sum(n, primes)` to check Goldbach's conjecture. We know that if a number $n$ is to be written as the sum of a prime and twice a square, then the prime must be smaller than $n$. In our case, the list `primes` already contains the potential candidates, so we will pass that to the function. We then check each prime $p$ in the list to see whether the difference between $n$ and $p$ is 2 times a perfect square. To do that, we can use the following:
 
 ```python
 def create_sum(n, primes):
@@ -135,4 +137,4 @@ So there we have it, problem solved! There are hundreds of questions on the Proj
 
 <sub><sup> $1.$ Note the use of sigma notation in sums: </sup></sub>
 <br><sub><sup>• $\displaystyle\sum_1^n n$ is equivalent to $1+2+...+n$, and </sup></sub>
-<br><sub><sup>• $\displaystyle\sum_1^n n^2$ is equivalent to $1^2+2^2+...+n^2$.    [↩](#return-from-footnote)</sup></sub>
+<br><sub><sup>• $\displaystyle\sum_1^n n^2$ is equivalent to $1^2+2^2+...+n^2$. [↩](#return-from-footnote)</sup></sub>
