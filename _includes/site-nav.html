@@ -22,6 +22,9 @@
             {% if site.github %}
                 <a class="social-link social-link-gh" href="https://github.com/{{ site.github }}" target="_blank" rel="noopener">{% include github.html %}</a>
             {% endif %}
+            {% if site.codepen %}
+                <a class="social-link social-link-cp" href="https://codepen.io/{{ site.codepen }}" target="_blank" rel="noopener">{% include codepen.html %}</a>
+            {% endif %}
             {% if site.linkedin %}
                 <a class="social-link social-link-li" href="https://linkedin.com/{{ site.linkedin }}" target="_blank" rel="noopener">{% include linkedin.html %}</a>
             {% endif %}

@@ -27,6 +27,7 @@ subscribers: False # you need to connect an external service for this to work,
 twitter: False # replace by your username
 facebook: False # can replace with jennifer.ralph.73
 github: jenniferanneaus
+codepen: jenniferanneaus
 linkedin: in/jennifer-ralph-774528100/
 
 # Disqus
