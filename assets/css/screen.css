@@ -599,8 +599,8 @@ The first (most recent) post in the list is styled to be bigger than the others 
 }
 
 .post-full-image {
-    margin: 0 -10vw -165px;
-    height: 800px;
+    margin: 0 -10vw -365px;
+    height: 600px;
     background: var(--lightgrey) center center;
     background-size: cover;
     border-radius: 5px;
@@ -608,8 +608,8 @@ The first (most recent) post in the list is styled to be bigger than the others 
 
 @media (max-width: 1170px) {
     .post-full-image {
-        margin: 0 -4vw -100px;
-        height: 600px;
+        margin: 0 -4vw -340px;
+        height: 500px;
         border-radius: 0;
     }
 }
