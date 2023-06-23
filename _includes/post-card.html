@@ -20,6 +20,10 @@
                             {% endif %}
                         {% endfor %}
                         </span>
+                    {% else if post.date %}
+                        <span class="post-card-tags">
+                            {{ post.date | date:'%e %B %Y' }}
+                        </span>
                     {% endif %}
 
                     <h2 class="post-card-title">{{ post.title }}</h2>
